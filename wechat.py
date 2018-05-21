@@ -42,15 +42,24 @@ def getlisturl(key, pagestart, pageend, proxy):
         # 编码"&page"
         pagecode = urllib.request.quote("&page")
         # 循环爬取各页的文章链接
-        for page in range(pagestart, pageend+1):
-            # 分别构建各页的url链接，每次循环构建一次
-            url = "http://weixin.sogou.com/weixin?type=2&query="+keycode+pagecode+str(page)
-            # 用代理服务器爬取，解决IP被封杀问题
-            data1 = use_proxy(proxy, url)
-            # 获取文章链接的正则表达式
-            listurlpat = '<div class="txt-box">.*?(http://.*?)"'
-            # 获取每页的所有文章链接并添加到列表listurl中
-            listurl.append(re.compile(listurlpat, re.S).findall(data1))
+        for page in range(1):
+            if page < 2:
+                url = "http://weixin.sogou.com/weixin?type=2&query=" + keycode
+                data1 = use_proxy(proxy, url)
+                # 获取文章链接的正则表达式
+                listurlpat = '<div class="txt-box">.*?(http://.*?)"'
+                # 获取每页的所有文章链接并添加到列表listurl中
+                listurl.append(re.compile(listurlpat, re.S).findall(data1))
+                print(listurl[0])
+            else:
+                # 分别构建各页的url链接，每次循环构建一次
+                url = "http://weixin.sogou.com/weixin?type=2&query="+keycode+pagecode + '=' + str(page)
+                # 用代理服务器爬取，解决IP被封杀问题
+                data1 = use_proxy(proxy, url)
+                # 获取文章链接的正则表达式
+                listurlpat = '<div class="txt-box">.*?(http://.*?)"'
+                # 获取每页的所有文章链接并添加到列表listurl中
+                listurl.append(re.compile(listurlpat, re.S).findall(data1))
         print("共获取到" + str(len(listurl)) + '页') # 便于调试
         return listurl
     except urllib.error.URLError as e:
@@ -70,17 +79,17 @@ def getlisturl(key, pagestart, pageend, proxy):
 def getcontent(listurl, proxy):
     i = 0
     # 设置本地文件中的开始html编码
-    html1 = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://
-www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>微信文章页面</title>
-</head>
-<body>'''
-    fh = open("F:/Crawler/精通python的网络爬虫/第六章/wechat/1.html", "wb")
-    fh.write(html1.encode("utf-8"))
-    fh.close()
+#     html1 = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://
+# www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+# <html xmlns="http://www.w3.org/1999/xhtml">
+# <head>
+# <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+# <title>微信文章页面</title>
+# </head>
+# <body>'''
+#     fh = open("F:/Crawler/精通python的网络爬虫/第六章/wechat/1.html", "wb")
+#     fh.write(html1.encode("utf-8"))
+#     fh.close()
     # 再次以追加写入的方式打开文件，以写入对应文章内容
     fh = open("F:/Crawler/精通python的网络爬虫/第六章/wechat/1.html", "ab")
     # 此时listurl为二维列表形如listurl[][]，第一维存储的信息和第几页相关，
